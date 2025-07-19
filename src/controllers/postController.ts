@@ -128,3 +128,77 @@ export const deletePost = async (req: AuthRequest, res: Response) => {
     res.status(500).json({ message: 'Terjadi kesalahan pada server' });
   }
 };
+
+// @desc    Like a post
+// @route   POST /api/posts/:id/like
+// @access  Private
+export const likePost = async (req: AuthRequest, res: Response) => {
+  const postId = req.params.id;
+  const userId = req.user?._id;
+
+  // TAMBAHKAN VALIDASI INI
+  if (!userId) {
+    return res.status(401).json({ message: 'Aksi tidak diizinkan' });
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(postId)) {
+    return res.status(404).json({ message: 'Postingan tidak ditemukan' });
+  }
+
+  try {
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({ message: 'Postingan tidak ditemukan' });
+    }
+
+    const isLiked = post.likes.some((likeId) => likeId.equals(userId));
+
+    if (isLiked) {
+      return res.status(400).json({ message: 'Postingan sudah di-like' });
+    }
+
+    // Sekarang aman, karena userId sudah pasti bukan undefined
+    post.likes.push(userId);
+    await post.save();
+
+    res.json({ message: 'Postingan berhasil di-like', likes: post.likes });
+  } catch (error) {
+    res.status(500).json({ message: 'Terjadi kesalahan pada server' });
+  }
+};
+
+// @desc    Unlike a post
+// @route   DELETE /api/posts/:id/like
+// @access  Private
+export const unlikePost = async (req: AuthRequest, res: Response) => {
+  const postId = req.params.id;
+  const userId = req.user?._id;
+
+  if (!mongoose.Types.ObjectId.isValid(postId)) {
+    return res.status(404).json({ message: 'Postingan tidak ditemukan' });
+  }
+
+  try {
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({ message: 'Postingan tidak ditemukan' });
+    }
+
+    // Cek apakah user memang sudah me-like postingan ini
+    const isLiked = post.likes.some((likeId) => likeId.equals(userId));
+
+    if (!isLiked) {
+      return res.status(400).json({ message: 'Postingan belum di-like' });
+    }
+
+    // Hapus ID user dari array 'likes'
+    post.likes = post.likes.filter((likeId) => !likeId.equals(userId));
+    await post.save();
+
+    res.json({ message: 'Like berhasil dihapus', likes: post.likes });
+  } catch (error) {
+    res.status(500).json({ message: 'Terjadi kesalahan pada server' });
+  }
+};
