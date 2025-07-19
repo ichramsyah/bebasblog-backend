@@ -28,6 +28,7 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "multer-storage-cloudinary": "^4.0.0",
     "nodemon": "^3.1.10"
   }
 }

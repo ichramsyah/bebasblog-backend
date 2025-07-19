@@ -28,27 +28,32 @@ export const getUserProfile = async (req: AuthRequest, res: Response) => {
 // @route   PUT /api/users/me
 // @access  Private
 export const updateUserProfile = async (req: AuthRequest, res: Response) => {
-  // Dapatkan user dari database untuk memastikan kita punya data terbaru
-  const user = await User.findById(req.user?._id);
+  try {
+    const user = await User.findById(req.user?._id);
 
-  if (user) {
-    // Cek apakah username baru sudah digunakan oleh orang lain
-    if (req.body.username) {
+    if (!user) {
+      return res.status(404).json({ message: 'User tidak ditemukan' });
+    }
+
+    // Cek dan update username jika ada di body
+    if (req.body.username && req.body.username !== user.username) {
       const userExists = await User.findOne({ username: req.body.username });
-      // Jika user ada DAN id-nya BEDA dengan user yang sedang login
       if (userExists && userExists._id.toString() !== user._id.toString()) {
         return res.status(400).json({ message: 'Username sudah digunakan' });
       }
       user.username = req.body.username;
     }
 
-    // Update field lain jika ada di request body
+    // Update bio jika ada di body, jika tidak, gunakan bio yang lama
     user.bio = req.body.bio || user.bio;
 
-    // Simpan perubahan ke database
+    // Update foto profil jika ada file yang diupload
+    if (req.file) {
+      user.profile_picture_url = req.file.path;
+    }
+
     const updatedUser = await user.save();
 
-    // Kirim kembali data user yang sudah diupdate
     res.json({
       _id: updatedUser._id,
       username: updatedUser.username,
@@ -56,8 +61,8 @@ export const updateUserProfile = async (req: AuthRequest, res: Response) => {
       bio: updatedUser.bio,
       profile_picture_url: updatedUser.profile_picture_url,
     });
-  } else {
-    res.status(404).json({ message: 'User tidak ditemukan' });
+  } catch (error) {
+    res.status(500).json({ message: 'Terjadi kesalahan pada server' });
   }
 };
 
