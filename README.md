@@ -14,7 +14,7 @@
 [![MongoDB Atlas](https://img.shields.io/badge/MongoDB_Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/cloud/atlas)
 [![Google Cloud](https://img.shields.io/badge/Google_Cloud-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white)](https://cloud.google.com/)
 
-This is the backend service for the Bebasblog project, a RESTful API built to support a blogging or social media platform. It provides user authentication, profile management, and post handling with features like image uploads (via Cloudinary), likes, and comments. The project is developed using TypeScript, Express, and Mongoose, with support for Google OAuth authentication.
+Ini adalah layanan backend untuk proyek Bebasblog, sebuah API RESTful yang dibangun untuk mendukung platform blogging atau media sosial. Layanan ini menyediakan autentikasi pengguna, manajemen profil, dan penanganan postingan dengan fitur seperti unggahan gambar (via Cloudinary), like, dan komentar. Proyek ini dikembangkan menggunakan TypeScript, Express, dan Mongoose, dengan dukungan untuk autentikasi Google OAuth.
 
 ## Daftar Isi
 
@@ -105,27 +105,27 @@ Proyek ini dibangun di atas beberapa konsep dan pola arsitektur perangkat lunak 
 
 ### Authentication
 
-- `POST /api/auth/register` - Register a new user.
-- `POST /api/auth/login` - Log in a user.
+- `POST /api/auth/register` - Mendaftarkan pengguna baru.
+- `POST /api/auth/login` - Login pengguna.
 
 ### User
 
-- `GET /api/users/me` - Get current user profile (Private).
-- `PUT /api/users/me` - Update current user profile (Private).
-- `PUT /api/users/me` - Update image user profile (Private).
-- `PUT /api/users/me/password` - Update current user password (Private).
+- `GET /api/users/me` - Mendapatkan profil pengguna saat ini (Terproteksi).
+- `PUT /api/users/me` - Memperbarui profil pengguna saat ini (Terproteksi).
+- `PUT /api/users/me` - Memperbarui gambar profil pengguna (Terproteksi).
+- `PUT /api/users/me/password` - Memperbarui kata sandi pengguna saat ini (Terproteksi).
 
 ### Posts
 
-- `POST /api/posts` - Create a new post (Private).
-- `GET /api/posts` - Get all posts.
-- `GET /api/posts/:id` - Get a specific post by ID.
-- `PUT /api/posts/:id` - Update a specific post (Private).
-- `DEL /api/posts/:id` - Delete a specific post (Private).
-- `POST /api/posts/:id/like` - Like a specific post (Private).
-- `DEL /api/posts/:id/like` - Unlike a specific post (Private).
-- `POST /api/posts/:id/comments` - Add a comment to a specific post (Private).
-- `GET /api/posts/:id/comments` - Get all comments for a specific post.
+- `POST /api/posts` - Membuat postingan baru (Terproteksi).
+- `GET /api/posts` - Mendapatkan semua postingan.
+- `GET /api/posts/:id` - Mendapatkan postingan spesifik berdasarkan ID.
+- `PUT /api/posts/:id` - Memperbarui postingan spesifik (Terproteksi).
+- `DEL /api/posts/:id` - Menghapus postingan spesifik (Terproteksi).
+- `POST /api/posts/:id/like` - Menyukai postingan spesifik (Terproteksi).
+- `DEL /api/posts/:id/like` - Membatalkan like pada postingan spesifik (Terproteksi).
+- `POST /api/posts/:id/comments` - Menambahkan komentar pada postingan spesifik (Terproteksi).
+- `GET /api/posts/:id/comments` - Mendapatkan semua komentar untuk postingan spesifik.
 
 ## Setup Variabel Environment (`.env`)
 
