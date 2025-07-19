@@ -16,6 +16,8 @@
 
 Ini adalah layanan backend untuk proyek Bebasblog, sebuah API RESTful yang dibangun untuk mendukung platform blogging atau media sosial. Layanan ini menyediakan autentikasi pengguna, manajemen profil, dan penanganan postingan dengan fitur seperti unggahan gambar (via Cloudinary), like, dan komentar. Proyek ini dikembangkan menggunakan TypeScript, Express, dan Mongoose, dengan dukungan untuk autentikasi Google OAuth.
 
+🔥 Postman Collection: [Dokumentasi API Bebasblog](https://ichramsyah.postman.co/workspace/ichramsyah's-Workspace~79410002-fbc3-42b3-8244-d6e51e95ade6/collection/44849239-3e527de1-9579-47d2-9ef5-c0fde29019ce?action=share&creator=44849239)
+
 ## Daftar Isi
 
 - [Fitur Utama Backend](#fitur-utama-backend)
