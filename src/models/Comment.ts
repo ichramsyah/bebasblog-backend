@@ -3,8 +3,8 @@ import { Schema, model, Document, Types } from 'mongoose';
 
 export interface IComment extends Document {
   _id: Types.ObjectId;
-  post: Types.ObjectId; // Post yang dikomentari
-  user: Types.ObjectId; // User yang berkomentar
+  post: Types.ObjectId;
+  user: Types.ObjectId;
   content: string;
 }
 

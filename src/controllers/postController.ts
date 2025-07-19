@@ -3,6 +3,7 @@ import { Response, Request } from 'express';
 import { AuthRequest } from '../middleware/authMiddleware.ts';
 import Post from '../models/Post';
 import mongoose from 'mongoose';
+import Comment from '../models/Comment';
 
 // @desc    Create a new post
 // @route   POST /api/posts
@@ -136,7 +137,6 @@ export const likePost = async (req: AuthRequest, res: Response) => {
   const postId = req.params.id;
   const userId = req.user?._id;
 
-  // TAMBAHKAN VALIDASI INI
   if (!userId) {
     return res.status(401).json({ message: 'Aksi tidak diizinkan' });
   }
@@ -198,6 +198,49 @@ export const unlikePost = async (req: AuthRequest, res: Response) => {
     await post.save();
 
     res.json({ message: 'Like berhasil dihapus', likes: post.likes });
+  } catch (error) {
+    res.status(500).json({ message: 'Terjadi kesalahan pada server' });
+  }
+};
+
+// @desc    Add a comment to a post
+// @route   POST /api/posts/:id/comments
+// @access  Private
+export const addComment = async (req: AuthRequest, res: Response) => {
+  const { content } = req.body;
+  const postId = req.params.id;
+  const userId = req.user?._id;
+
+  if (!userId) {
+    return res.status(401).json({ message: 'Aksi tidak diizinkan' });
+  }
+
+  if (!content) {
+    return res.status(400).json({ message: 'Komentar tidak boleh kosong' });
+  }
+
+  try {
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: 'Postingan tidak ditemukan' });
+    }
+
+    // 1. Buat dokumen comment baru
+    const newComment = new Comment({
+      content,
+      post: postId,
+      user: userId,
+    });
+    await newComment.save();
+
+    // 2. Tambahkan ID comment ke array 'comments' di dokumen Post
+    post.comments.push(newComment._id);
+    await post.save();
+
+    // Ambil kembali comment untuk di-populate sebelum dikirim sebagai response
+    const populatedComment = await Comment.findById(newComment._id).populate('user', 'username profile_picture_url');
+
+    res.status(201).json(populatedComment);
   } catch (error) {
     res.status(500).json({ message: 'Terjadi kesalahan pada server' });
   }
