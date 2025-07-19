@@ -1,13 +1,10 @@
 // src/index.ts
+import 'dotenv/config';
 import express, { Request, Response } from 'express';
-import dotenv from 'dotenv';
 import connectDB from './config/db';
 import authRoutes from './routes/authRoutes';
 import userRoutes from './routes/userRoutes';
 import postRoutes from './routes/postRoutes';
-
-// Konfigurasi dotenv
-dotenv.config();
 
 // Koneksi
 connectDB();

@@ -9,16 +9,19 @@ import Comment from '../models/Comment';
 // @route   POST /api/posts
 // @access  Private
 export const createPost = async (req: AuthRequest, res: Response) => {
-  const { description, images } = req.body;
+  const { description } = req.body;
+  const files = req.files as Express.Multer.File[];
 
-  if (!description || !images || images.length === 0) {
+  if (!description || !files || files.length === 0) {
     return res.status(400).json({ message: 'Deskripsi dan gambar tidak boleh kosong' });
   }
 
   try {
+    const imagesUrls = files.map((file) => file.path);
+
     const post = new Post({
       description,
-      images,
+      images: imagesUrls,
       user: req.user?._id,
     });
 
@@ -241,6 +244,28 @@ export const addComment = async (req: AuthRequest, res: Response) => {
     const populatedComment = await Comment.findById(newComment._id).populate('user', 'username profile_picture_url');
 
     res.status(201).json(populatedComment);
+  } catch (error) {
+    res.status(500).json({ message: 'Terjadi kesalahan pada server' });
+  }
+};
+
+// @desc    Get all comments for a post
+// @route   GET /api/posts/:id/comments
+// @access  Public
+export const getCommentsForPost = async (req: Request, res: Response) => {
+  const postId = req.params.id;
+
+  if (!mongoose.Types.ObjectId.isValid(postId)) {
+    return res.status(404).json({ message: 'Postingan tidak ditemukan' });
+  }
+
+  try {
+    // Cari semua comment yang memiliki post ID yang sesuai
+    const comments = await Comment.find({ post: postId })
+      .populate('user', 'username profile_picture_url') // Sertakan data user yang berkomentar
+      .sort({ createdAt: 'asc' }); // Urutkan dari yang paling lama
+
+    res.json(comments);
   } catch (error) {
     res.status(500).json({ message: 'Terjadi kesalahan pada server' });
   }

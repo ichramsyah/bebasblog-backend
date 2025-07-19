@@ -8,5 +8,10 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true, // Mengaktifkan semua pengecekan tipe yang ketat
     "skipLibCheck": true
-  }
+  },
+  "include": [
+    "src/**/*.ts",
+    "typings/**/*.d.ts" // Tambahkan ini agar file .d.ts Anda juga di-scan
+  ],
+  "exclude": ["node_modules"]
 }
