@@ -3,21 +3,24 @@ import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
 import connectDB from './config/db';
 
-// Konfigurasi dotenv untuk memuat environment variables
+import authRoutes from './routes/authRoutes';
+
+// Konfigurasi dotenv
 dotenv.config();
 
-// Koneksi ke Database
+// Koneksi
 connectDB();
 
 const app = express();
 
-// Middleware untuk parsing JSON body
+// Middleware
 app.use(express.json());
 
-// Route test sederhana
+// Route
 app.get('/', (req: Request, res: Response) => {
   res.send('API is running for Bebas Blog...');
 });
+app.use('/api/auth', authRoutes);
 
 const PORT = process.env.PORT || 5000;
 
