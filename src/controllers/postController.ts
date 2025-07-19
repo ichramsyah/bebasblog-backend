@@ -65,3 +65,36 @@ export const getPostById = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Terjadi kesalahan pada server' });
   }
 };
+
+// @desc    Update a post
+// @route   PUT /api/posts/:id
+// @access  Private
+export const updatePost = async (req: AuthRequest, res: Response) => {
+  const { description } = req.body;
+  const postId = req.params.id;
+
+  if (!mongoose.Types.ObjectId.isValid(postId)) {
+    return res.status(404).json({ message: 'Postingan tidak ditemukan' });
+  }
+
+  try {
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({ message: 'Postingan tidak ditemukan' });
+    }
+
+    // Cek kepemilikan: pastikan ID user di token sama dengan ID user di post
+    if (post.user.toString() !== req.user?._id.toString()) {
+      return res.status(401).json({ message: 'Aksi tidak diizinkan' });
+    }
+
+    // Update deskripsi
+    post.description = description || post.description;
+    const updatedPost = await post.save();
+
+    res.json(updatedPost);
+  } catch (error) {
+    res.status(500).json({ message: 'Terjadi kesalahan pada server' });
+  }
+};
