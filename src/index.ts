@@ -2,8 +2,8 @@
 import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
 import connectDB from './config/db';
-
 import authRoutes from './routes/authRoutes';
+import userRoutes from './routes/userRoutes';
 
 // Konfigurasi dotenv
 dotenv.config();
@@ -21,6 +21,7 @@ app.get('/', (req: Request, res: Response) => {
   res.send('API is running for Bebas Blog...');
 });
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
 
 const PORT = process.env.PORT || 5000;
 

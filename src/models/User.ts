@@ -9,6 +9,8 @@ export interface IUser extends Document {
   password?: string;
   profile_picture_url: string;
   bio: string;
+  createdAt?: Date;
+  matchPassword(enteredPassword: string): Promise<boolean>;
 }
 
 // Interface untuk Methods (fungsi custom)
