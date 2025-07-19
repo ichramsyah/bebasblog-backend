@@ -54,3 +54,38 @@ export const registerUser = async (req: Request, res: Response) => {
     res.status(500).json({ message: errorMessage });
   }
 };
+
+export const loginUser = async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+
+  try {
+    // 1. Validasi input
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Harap isi email dan password' });
+    }
+
+    // 2. Cari user berdasarkan email
+    // Gunakan .select('+password') karena secara default password tidak disertakan
+    const user = await User.findOne({ email }).select('+password');
+
+    // 3. Cek apakah user ada DAN password cocok
+    if (user && (await user.matchPassword(password))) {
+      // 4. Kirim response berhasil beserta token
+      res.json({
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        token: generateToken(user._id.toString()),
+      });
+    } else {
+      // Kirim pesan error yang umum untuk keamanan
+      res.status(401).json({ message: 'Email atau password salah' });
+    }
+  } catch (error) {
+    let errorMessage = 'Terjadi kesalahan pada server';
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+    res.status(500).json({ message: errorMessage });
+  }
+};
