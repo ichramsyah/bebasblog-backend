@@ -98,3 +98,33 @@ export const updatePost = async (req: AuthRequest, res: Response) => {
     res.status(500).json({ message: 'Terjadi kesalahan pada server' });
   }
 };
+
+// @desc    Delete a post
+// @route   DELETE /api/posts/:id
+// @access  Private
+export const deletePost = async (req: AuthRequest, res: Response) => {
+  const postId = req.params.id;
+
+  if (!mongoose.Types.ObjectId.isValid(postId)) {
+    return res.status(404).json({ message: 'Postingan tidak ditemukan' });
+  }
+
+  try {
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({ message: 'Postingan tidak ditemukan' });
+    }
+
+    // Cek kepemilikan
+    if (post.user.toString() !== req.user?._id.toString()) {
+      return res.status(401).json({ message: 'Aksi tidak diizinkan' });
+    }
+
+    await post.deleteOne(); // Gunakan deleteOne() untuk menghapus dokumen
+
+    res.json({ message: 'Postingan berhasil dihapus' });
+  } catch (error) {
+    res.status(500).json({ message: 'Terjadi kesalahan pada server' });
+  }
+};
