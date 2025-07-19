@@ -5,6 +5,8 @@ import connectDB from './config/db';
 import authRoutes from './routes/authRoutes';
 import userRoutes from './routes/userRoutes';
 import postRoutes from './routes/postRoutes';
+import passport from 'passport';
+import './config/passport';
 
 // Koneksi
 connectDB();
@@ -13,6 +15,9 @@ const app = express();
 
 // Middleware
 app.use(express.json());
+
+// Inisialisasi Passport
+app.use(passport.initialize());
 
 // Route
 app.get('/', (req: Request, res: Response) => {

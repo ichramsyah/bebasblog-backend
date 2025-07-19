@@ -2,6 +2,7 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import User from '../models/User';
+import { AuthRequest } from '../middleware/authMiddleware.ts';
 
 // Fungsi untuk menghasilkan token
 const generateToken = (id: string) => {
@@ -78,7 +79,6 @@ export const loginUser = async (req: Request, res: Response) => {
         token: generateToken(user._id.toString()),
       });
     } else {
-      // Kirim pesan error yang umum untuk keamanan
       res.status(401).json({ message: 'Email atau password salah' });
     }
   } catch (error) {
@@ -88,4 +88,15 @@ export const loginUser = async (req: Request, res: Response) => {
     }
     res.status(500).json({ message: errorMessage });
   }
+};
+
+export const googleAuthCallback = (req: AuthRequest, res: Response) => {
+  const user = req.user;
+  if (!user) {
+    return res.redirect('http://localhost:3000/login/failed');
+  }
+
+  const token = generateToken(user._id.toString());
+
+  res.redirect(`http://localhost:3000?token=${token}`);
 };
