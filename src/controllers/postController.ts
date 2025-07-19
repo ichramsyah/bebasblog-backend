@@ -2,6 +2,7 @@
 import { Response, Request } from 'express';
 import { AuthRequest } from '../middleware/authMiddleware.ts';
 import Post from '../models/Post';
+import mongoose from 'mongoose';
 
 // @desc    Create a new post
 // @route   POST /api/posts
@@ -37,6 +38,29 @@ export const getPosts = async (req: Request, res: Response) => {
     const posts = await Post.find({}).populate('user', 'username profile_picture_url').sort({ createdAt: -1 });
 
     res.json(posts);
+  } catch (error) {
+    res.status(500).json({ message: 'Terjadi kesalahan pada server' });
+  }
+};
+
+// @desc    Fetch a single post by ID
+// @route   GET /api/posts/:id
+// @access  Public
+export const getPostById = async (req: Request, res: Response) => {
+  // Cek apakah ID yang diberikan valid formatnya
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    return res.status(404).json({ message: 'Postingan tidak ditemukan (ID tidak valid)' });
+  }
+
+  try {
+    const post = await Post.findById(req.params.id).populate('user', 'username profile_picture_url'); // Sertakan data user
+
+    if (post) {
+      res.json(post);
+    } else {
+      // Jika ID valid tapi post tidak ada
+      res.status(404).json({ message: 'Postingan tidak ditemukan' });
+    }
   } catch (error) {
     res.status(500).json({ message: 'Terjadi kesalahan pada server' });
   }
