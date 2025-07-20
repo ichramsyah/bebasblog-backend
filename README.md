@@ -116,6 +116,7 @@ Proyek ini dibangun di atas beberapa konsep dan pola arsitektur perangkat lunak 
 - `PUT /api/users/me` - Memperbarui profil pengguna saat ini (Terproteksi).
 - `PUT /api/users/me` - Memperbarui gambar profil pengguna (Terproteksi).
 - `PUT /api/users/me/password` - Memperbarui kata sandi pengguna saat ini (Terproteksi).
+- `GET /api/users/:username/posts` - Menampilkan seluruh posts seseorang.
 
 ### Posts
 

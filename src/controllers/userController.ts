@@ -1,7 +1,8 @@
 // src/controllers/userController.ts
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { AuthRequest } from '../middleware/authMiddleware.ts';
 import User from '../models/User';
+import Post from '../models/Post';
 
 // @desc    Get user profile
 // @route   GET /api/users/me
@@ -98,5 +99,26 @@ export const updateUserPassword = async (req: AuthRequest, res: Response) => {
   } else {
     // 5. Jika password saat ini tidak cocok
     res.status(401).json({ message: 'Password saat ini salah' });
+  }
+};
+
+// @desc    Get all posts by a specific user
+// @route   GET /api/users/:username/posts
+// @access  Public
+export const getPostsByUsername = async (req: Request, res: Response) => {
+  try {
+    // 1. Cari user berdasarkan username dari parameter URL
+    const user = await User.findOne({ username: req.params.username });
+
+    if (!user) {
+      return res.status(404).json({ message: 'Pengguna tidak ditemukan' });
+    }
+
+    // 2. Cari semua postingan dengan user ID yang cocok
+    const posts = await Post.find({ user: user._id }).sort({ createdAt: -1 }); // Urutkan dari yang terbaru
+
+    res.json(posts);
+  } catch (error) {
+    res.status(500).json({ message: 'Terjadi kesalahan pada server' });
   }
 };
