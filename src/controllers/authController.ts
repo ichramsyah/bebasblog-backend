@@ -7,7 +7,7 @@ import { AuthRequest } from '../middleware/authMiddleware.ts';
 // Fungsi untuk menghasilkan token
 const generateToken = (id: string) => {
   return jwt.sign({ id }, process.env.JWT_SECRET as string, {
-    expiresIn: '30d', // Token akan berlaku selama 30 hari
+    expiresIn: '2d',
   });
 };
 
