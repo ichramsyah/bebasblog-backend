@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import { AuthRequest } from '../middleware/authMiddleware.ts';
 import User from '../models/User';
 import Post from '../models/Post';
+import mongoose from 'mongoose';
 
 // @desc    Get user profile
 // @route   GET /api/users/me
@@ -70,9 +71,6 @@ export const updateUserProfile = async (req: AuthRequest, res: Response) => {
 // @desc    Update user password
 // @route   PUT /api/users/me/password
 // @access  Private
-// @desc    Update user password
-// @route   PUT /api/users/me/password
-// @access  Private
 export const updateUserPassword = async (req: AuthRequest, res: Response) => {
   const { currentPassword, newPassword } = req.body;
 
@@ -118,6 +116,49 @@ export const getPostsByUsername = async (req: Request, res: Response) => {
     const posts = await Post.find({ user: user._id }).sort({ createdAt: -1 }); // Urutkan dari yang terbaru
 
     res.json(posts);
+  } catch (error) {
+    res.status(500).json({ message: 'Terjadi kesalahan pada server' });
+  }
+};
+
+// @desc    Get a user's public profile
+// @route   GET /api/users/:username
+// @access  Public
+export const getUserPublicProfile = async (req: Request, res: Response) => {
+  try {
+    // 1. Cari user berdasarkan username
+    const user = await User.findOne({ username: req.params.username }).select('-password');
+
+    if (!user) {
+      return res.status(404).json({ message: 'Pengguna tidak ditemukan' });
+    }
+
+    // 2. Hitung jumlah postingan
+    const postCount = await Post.countDocuments({ user: user._id });
+
+    // 3. Hitung total like dari semua postingan pengguna menggunakan aggregation
+    const likesAggregation = await Post.aggregate([
+      // Tahap 1: Cocokkan semua post milik user
+      { $match: { user: user._id } },
+      // Tahap 2: Hitung jumlah elemen di array 'likes'
+      { $project: { likeCount: { $size: '$likes' } } },
+      // Tahap 3: Jumlahkan semua likeCount menjadi satu
+      { $group: { _id: null, totalLikes: { $sum: '$likeCount' } } },
+    ]);
+
+    // Ambil hasil total like, jika tidak ada post maka hasilnya 0
+    const totalLikes = likesAggregation.length > 0 ? likesAggregation[0].totalLikes : 0;
+
+    // 4. Kirim response
+    res.json({
+      _id: user._id,
+      username: user.username,
+      bio: user.bio,
+      profile_picture_url: user.profile_picture_url,
+      createdAt: user.createdAt,
+      postCount,
+      totalLikes,
+    });
   } catch (error) {
     res.status(500).json({ message: 'Terjadi kesalahan pada server' });
   }
