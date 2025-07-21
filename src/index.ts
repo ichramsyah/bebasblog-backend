@@ -7,6 +7,7 @@ import userRoutes from './routes/userRoutes';
 import postRoutes from './routes/postRoutes';
 import passport from 'passport';
 import './config/passport';
+import cors from 'cors';
 
 // Koneksi
 connectDB();
@@ -18,6 +19,14 @@ app.use(express.json());
 
 // Inisialisasi Passport
 app.use(passport.initialize());
+
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  })
+);
+app.use(express.json());
 
 // Route
 app.get('/', (req: Request, res: Response) => {
