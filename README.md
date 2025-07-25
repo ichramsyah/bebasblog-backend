@@ -1,4 +1,4 @@
-![image](/src/public/postman-bebasblog.JPG)
+![image](/src/public/bebasblog-backend.JPG)
 
 ## 🚀BebasBlog RESTful APIs
 
