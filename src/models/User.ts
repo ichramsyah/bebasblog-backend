@@ -26,7 +26,7 @@ const UserSchema = new Schema<IUser, UserModel>( // <-- Gunakan tipe Model di si
     username: { type: String, required: true, unique: true, trim: true },
     email: { type: String, required: true, unique: true, trim: true, lowercase: true },
     password: { type: String, required: true, select: false }, // `select: false` menyembunyikan password
-    profile_picture_url: { type: String, default: 'default_profile_pic_url' },
+    profile_picture_url: { type: String, default: 'https://www.pngall.com/wp-content/uploads/5/Profile-PNG-File.png' },
     bio: { type: String, default: '' },
     // HAPUS matchPassword DARI SINI
   },
